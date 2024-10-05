@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calories Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: url("https://www.myprotein.com/images?url=https://blogscdn.thehut.net/app/uploads/sites/478/2021/01/calories-weight-lifting-FEATURE-min_1642171343.jpg&auto=avif&width=1200&fit=crop");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            max-width: 350px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 15px;
+            font-size: 22px;
+            color: #333;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        label {
+            text-align: left;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        input, select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+            width: 100%;
+        }
+        input:focus, select:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #e0f7fa;
+            border-radius: 5px;
+            display: none;
+        }
+        .result h3 {
+            margin: 0;
+            font-size: 16px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Calorie Burn Prediction</h1>
+        <form id="calorieForm">
+            <label for="Gender">Gender</label>
+            <select id="Gender" name="Gender" required>
+                <option value="">Select Gender</option>
+            </select>
+
+            <label for="Age">Age</label>
+            <input type="number" id="Age" name="Age" placeholder="Enter Age" required>
+
+            <label for="Height">Height (cm)</label>
+            <input type="number" id="Height" name="Height" placeholder="Enter Height in cm" required>
+
+            <label for="Weight">Weight (kg)</label>
+            <input type="number" id="Weight" name="Weight" placeholder="Enter Weight in kg" required>
+
+            <label for="Duration">Duration (mins)</label>
+            <input type="number" id="Duration" name="Duration" placeholder="Enter Exercise Duration in minutes" required>
+
+            <button type="submit">Predict Calories</button>
+        </form>
+
+        <div id="result" class="result">
+            <h3>Predicted Calories Burned: <span id="predictedCalories"></span></h3>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Fetch Gender options from the API and populate the dropdown
+            fetch('/Gender')
+                .then(response => response.json())
+                .then(data => {
+                    const genderSelect = document.getElementById('Gender');
+                    data.forEach(gender => {
+                        const option = document.createElement('option');
+                        option.value = gender;
+                        option.text = gender.charAt(0).toUpperCase() + gender.slice(1);
+                        genderSelect.appendChild(option);
+                    });
+                });
+
+            // Handle form submission
+            document.getElementById('calorieForm').addEventListener('submit', function (event) {
+                event.preventDefault();
+
+                const formData = new FormData(this);
+
+                fetch('/prediction', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('predictedCalories').textContent = data.Predicated_Calories;
+                    document.getElementById('result').style.display = 'block';
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
